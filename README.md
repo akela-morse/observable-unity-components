@@ -11,19 +11,20 @@ This plugin allows you to get notified whenever the fields of your component are
 #### Sample code
 
 ```cs
+using ObervableUnityComponents;
 using UnityEngine;
 
 public partial class MyObservableComponent : MonoBehaviour
 {
-   [Watch, SerializeField] private float myWatchedField;
+	[Watch, SerializeField] private float myWatchedField;
 
-   private Update()
-   {
-      if (HaveWatchedValuesChanged())
-      {
-         Debug.Log("Who DARES changing my values?!");
-      }
-   }
+	private void Update()
+	{
+		if (HaveWatchedValuesChanged())
+		{
+			Debug.Log("Who DARES changing my values?!");
+		}
+	}
 }
 ```
 
