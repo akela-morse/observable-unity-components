@@ -36,7 +36,7 @@ public partial class MyObservableComponent : MonoBehaviour
 
 ### Installing
 
-* Download the .unitypackage from the Releases tab.
+* Download the .unitypackage from the [https://github.com/akela-morse/obervable-unity-components/releases/latest](Releases tab).
 * Extract in your Unity project
 
 > [!IMPORTANT]  
