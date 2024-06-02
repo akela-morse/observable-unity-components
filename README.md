@@ -14,9 +14,6 @@ This plugin allows you to get notified whenever the fields of your component are
 
 * Unity 2020.2 minimum
 
-> [!NOTE]  
-> Up until Unity 2023.2 the only compatible version for the `Microsoft.CodeAnalysis` package is 3.8 and the Unity 6 preview seems to be compatible with version 4.3
-
 ### Installing
 
 * Download the .unitypackage from the Releases tab.
