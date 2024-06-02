@@ -40,7 +40,7 @@ public partial class MyObservableComponent : MonoBehaviour
 * Extract in your Unity project
 
 > [!IMPORTANT]  
-> This package *must* be installed in the `Assets` folder. Don't try to install this as a custom package; Roslyn Analysers will only work in Unity when using a [special asset label](https://docs.unity3d.com/2021.3/Documentation/Manual/roslyn-analyzers.html), and asset labels don't work in custom packages.
+> This package *must* be installed in the **Assets** folder. Don't try to install this in your **Packages** folder; Roslyn Analysers will only work in Unity when using a [special asset label](https://docs.unity3d.com/2021.3/Documentation/Manual/roslyn-analyzers.html), and asset labels don't work in **Packages**.
 
 ### How to use
 
