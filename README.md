@@ -16,15 +16,15 @@ using UnityEngine;
 
 public partial class MyObservableComponent : MonoBehaviour
 {
-	[Watch, SerializeField] private float myWatchedField;
+    [Watch, SerializeField] private float myWatchedField;
 
-	private void Update()
-	{
-		if (HaveWatchedValuesChanged())
-		{
-			Debug.Log("Who DARES changing my values?!");
-		}
-	}
+    private void Update()
+    {
+        if (HaveWatchedValuesChanged())
+        {
+            Debug.Log("Who DARES changing my values?!");
+        }
+    }
 }
 ```
 
