@@ -6,7 +6,7 @@ Watchable `MonoBehaviour` and `ScriptableObject` fields thanks to a Custom Sourc
 
 ## Description
 
-This plugin allows you to get notified whenever the fields of your component are getting modified from anywhere within the engine, including from animation or within the editor. No refactoring is needed, and there is no need for verbose checks or interface implementation. Just make your `MonoBehaviour` or `ScriptableObject` class partial, add a `[Watch]` attribute to your fields, and then check for `HaveValuesChanged()` in your `Update()` method or anywhere else you like.
+This plugin allows you to get notified whenever the fields of your component are getting modified from anywhere within the engine, including from animation or within the editor. No refactoring is needed, and there is no need for verbose checks or interface implementation. Just make your `MonoBehaviour` or `ScriptableObject` class partial, add a `[Watch]` attribute to your fields, and then check for `HaveWatchedValuesChanged()` in your `Update()` method or anywhere else you like.
 
 ## Getting Started
 
@@ -26,12 +26,31 @@ This plugin allows you to get notified whenever the fields of your component are
 
 * Set your `MonoBehaviour` class or `ScriptableObject` class to partial
 * Add a `[Watch]` attribute to any serialized field you want to watch
-* Check for `
+* Call `HaveWatchedValuesChanged()` to check whether or not the watched fields have been modified since the last check
+
+#### Sample code
+
+```cs
+using UnityEngine;
+
+public partial class MyObservableComponent : MonoBehaviour
+{
+   [Watch, SerializeField] private float myWatchedField;
+
+   private Update()
+   {
+      if (HaveWatchedValuesChanged())
+      {
+         Debug.Log("Who DARES changing my values?!");
+      }
+   }
+}
+```
 
 ## Known issues
 
-* IntelliSense may throw an error when accessing generated identifiers such as `HaveValuesChanged()`. Closing VS and re-opening it might solve the issue.
-* The first call to `HaveValuesChanged()` will always return `true` even if no values have changed. A temporary workaround is to add the following code before any calls to `HaveValuesChanged()` are made (but not after!)
+* IntelliSense may throw an error when accessing generated identifiers such as `HaveWatchedValuesChanged()`. Closing VS and re-opening it might solve the issue.
+* The first call to `HaveWatchedValuesChanged()` will always return `true` even if no values have changed. A temporary workaround is to add the following code before any calls to `HaveWatchedValuesChanged()` are made (but not after!)
 
 ```cs
 lastHash = GetCurrentHash();
@@ -41,7 +60,7 @@ lastHash = GetCurrentHash();
 
 > Why not implement generated properties like the `INotifyPropertyChanged` interface in MVVM applications?
 
-This particular plugin is primarily written with Unity in mind. The goal here is to detect changes that happen from anywhere in the engine, including from an Animator or a Timeline component. Since Unity may change a component's fields using its internal serialization process, we cannot expect it to call our generated properties. Using the `HaveValuesChanged()` method aligns more with a regular Unity workflow.
+This particular plugin is primarily written with Unity in mind. The goal here is to detect changes that happen from anywhere in the engine, including from an Animator or a Timeline component. Since Unity may change a component's fields using its internal serialization process, we cannot expect it to call our generated properties. The `HaveWatchedValuesChanged()` method aligns more with a regular Unity workflow.
 
 ## Author
 
