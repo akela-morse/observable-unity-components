@@ -8,6 +8,25 @@ Watchable `MonoBehaviour` and `ScriptableObject` fields thanks to a Custom Sourc
 
 This plugin allows you to get notified whenever the fields of your component are getting modified from anywhere within the engine, including from animation or within the editor. No refactoring is needed, and there is no need for verbose checks or interface implementation. Just make your `MonoBehaviour` or `ScriptableObject` class partial, add a `[Watch]` attribute to your fields, and then check for `HaveWatchedValuesChanged()` in your `Update()` method or anywhere else you like.
 
+#### Sample code
+
+```cs
+using UnityEngine;
+
+public partial class MyObservableComponent : MonoBehaviour
+{
+   [Watch, SerializeField] private float myWatchedField;
+
+   private Update()
+   {
+      if (HaveWatchedValuesChanged())
+      {
+         Debug.Log("Who DARES changing my values?!");
+      }
+   }
+}
+```
+
 ## Getting Started
 
 ### Unity Version
@@ -27,25 +46,6 @@ This plugin allows you to get notified whenever the fields of your component are
 * Set your `MonoBehaviour` class or `ScriptableObject` class to partial
 * Add a `[Watch]` attribute to any serialized field you want to watch
 * Call `HaveWatchedValuesChanged()` to check whether or not the watched fields have been modified since the last check
-
-#### Sample code
-
-```cs
-using UnityEngine;
-
-public partial class MyObservableComponent : MonoBehaviour
-{
-   [Watch, SerializeField] private float myWatchedField;
-
-   private Update()
-   {
-      if (HaveWatchedValuesChanged())
-      {
-         Debug.Log("Who DARES changing my values?!");
-      }
-   }
-}
-```
 
 ## Known issues
 
