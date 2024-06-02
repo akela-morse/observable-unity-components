@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # Observable Unity Components
 
 Watchable `MonoBehaviour` and `ScriptableObject` fields thanks to a Custom Source Generator and Roslyn Analyser specifically written for Unity.
