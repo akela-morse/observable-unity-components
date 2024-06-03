@@ -70,6 +70,8 @@ Akela Morse
 
 ## Version History
 
+* 0.2
+	* Implemented support for derived classes with watchable fields
 * 0.1
     * Initial Release
 
