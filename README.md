@@ -54,7 +54,7 @@ public partial class MyObservableComponent : MonoBehaviour
 * The first call to `HaveWatchedValuesChanged()` will always return `true` even if no values have changed. A temporary workaround is to add the following code before any calls to `HaveWatchedValuesChanged()` are made (but not after!)
 
 ```cs
-lastHash = GetCurrentHash();
+this.observableGenerated_lastHash = this.observableGenerated_GetCurrentHash();
 ```
 
 ## F.A.Qs
