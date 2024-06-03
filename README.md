@@ -70,6 +70,9 @@ Akela Morse
 
 ## Version History
 
+* 0.3
+	* Fixed source generation accumulating in the same file
+	* Fixed issue whan watched fields are null references
 * 0.2
 	* Implemented support for derived classes with watchable fields
 * 0.1

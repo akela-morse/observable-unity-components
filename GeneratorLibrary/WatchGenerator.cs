@@ -34,12 +34,12 @@ namespace ObervableUnityComponentsGenerator
 			if (!fieldClassGroup.Any())
 				return;
 
-			var source = new StringBuilder();
-
 			foreach (var group in fieldClassGroup)
 			{
 				if (!ClassIsObservableBehaviour(group.Key, context) || group.Key.IsAbstract)
 					continue;
+
+				var source = new StringBuilder();
 
 				var namespaceName = group.Key.ContainingNamespace.ToDisplayString();
 				var hideMember = fieldClassGroup.Any(x => x.Key.Equals(group.Key.BaseType, SymbolEqualityComparer.Default) && !x.Key.IsAbstract);
@@ -75,10 +75,20 @@ $@"
 
 					var fieldName = fieldSymbol.Name;
 
-					source.Append(
+					if (fieldSymbol.Type.IsReferenceType)
+					{
+						source.Append(
+$@"
+				hash = hash * 23 + (this.{fieldName} == null ? 0 : this.{fieldName}.GetHashCode());"
+						);
+					}
+					else
+					{
+						source.Append(
 $@"
 				hash = hash * 23 + this.{fieldName}.GetHashCode();"
-					);
+						);
+					}
 				}
 
 				source.Append(
