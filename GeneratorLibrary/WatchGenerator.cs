@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace ObervableUnityComponentsGenerator
 {
@@ -38,10 +38,11 @@ namespace ObervableUnityComponentsGenerator
 
 			foreach (var group in fieldClassGroup)
 			{
-				if (!ClassIsObservableBehaviour(group.Key, context))
+				if (!ClassIsObservableBehaviour(group.Key, context) || group.Key.IsAbstract)
 					continue;
 
 				var namespaceName = group.Key.ContainingNamespace.ToDisplayString();
+				var hideMember = fieldClassGroup.Any(x => x.Key.Equals(group.Key.BaseType, SymbolEqualityComparer.Default) && !x.Key.IsAbstract);
 
 				if (namespaceName != GLOBAL_NAMESPACE)
 				{
@@ -55,16 +56,19 @@ $@"namespace {namespaceName}
 $@"
     public partial class {group.Key.Name}
     {{
-		private int lastHash;
+		private{(hideMember ? " new" : "")} int observableGenerated_lastHash;
 
-		private int GetCurrentHash()
+		private{(hideMember ? " new" : "")} int observableGenerated_GetCurrentHash()
 		{{
 			unchecked
 			{{
 				int hash = 17;"
 				);
 
-				foreach (var fieldSymbol in group)
+				var fullFieldList = new List<IFieldSymbol>();
+				GetWatchedFieldsFromBaseType(fullFieldList, group.Key, in fieldClassGroup);
+
+				foreach (var fieldSymbol in fullFieldList)
 				{
 					if (!FieldIsSerialisedInUnity(fieldSymbol, context))
 						continue;
@@ -89,12 +93,12 @@ $@"
 		/// <returns>True if any changes occured since the last check, False otherwise</returns>
 		public bool HaveWatchedValuesChanged()
 		{{
-			var currentHash = GetCurrentHash();
+			var currentHash = this.observableGenerated_GetCurrentHash();
 
-			if (lastHash == currentHash)
+			if (this.observableGenerated_lastHash == currentHash)
 				return false;
 
-			lastHash = currentHash;
+			this.observableGenerated_lastHash = currentHash;
 
 			return true;
 		}}
@@ -141,21 +145,6 @@ $@"
 				return false;
 			}
 
-			// partial check
-			//if (!classSymbol.DeclaringSyntaxReferences.Any(s => s.GetSyntax() is BaseTypeDeclarationSyntax d && d.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword))))
-			//{
-			//	context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
-			//		"AKELIB0003",
-			//		"Non-partial class",
-			//		"Class {0} has fields with [Watch] attribute, but is not marked partial.",
-			//		"Observable Unity Components",
-			//		DiagnosticSeverity.Error,
-			//		true), classSymbol.Locations.FirstOrDefault(), classSymbol.ToDisplayString()
-			//	));
-
-			//	return null;
-			//}
-
 			return true;
 		}
 
@@ -180,12 +169,27 @@ $@"
 			return true;
 		}
 
-		private string GetMemoryNameFromFieldName(string fieldName)
+		private void GetWatchedFieldsFromBaseType(List<IFieldSymbol> list, INamedTypeSymbol classSymbol, in IEnumerable<IGrouping<INamedTypeSymbol, IFieldSymbol>> fieldClassGroup)
 		{
-			var memoryName = Regex.Replace(fieldName, @"^[a-zA-Z]?_", "");
-			memoryName += "_last";
+			foreach (var type in EnumerateTypeHierarchy(classSymbol))
+			{
+				var existingClassSymbol = fieldClassGroup.FirstOrDefault(x => x.Key.Equals(type, SymbolEqualityComparer.Default));
 
-			return memoryName;
+				if (type.Equals(classSymbol, SymbolEqualityComparer.Default))
+					list.AddRange(existingClassSymbol);
+				else if (existingClassSymbol != null)
+					list.AddRange(existingClassSymbol.Where(x => x.DeclaredAccessibility != Accessibility.Private));
+			}
+		}
+
+		private static IEnumerable<INamedTypeSymbol> EnumerateTypeHierarchy(INamedTypeSymbol leaf)
+		{
+			do
+			{
+				yield return leaf;
+				leaf = leaf.BaseType;
+			}
+			while (leaf != null);
 		}
 	}
 }

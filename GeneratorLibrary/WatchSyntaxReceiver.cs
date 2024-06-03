@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ObervableUnityComponentsGenerator
 {
@@ -10,8 +12,14 @@ namespace ObervableUnityComponentsGenerator
 
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
-			// A field with at least one attribute
-			if (!(syntaxNode is FieldDeclarationSyntax fieldDeclaration) || fieldDeclaration.AttributeLists.Count == 0)
+			// Test for a public field, or a private/protected field with at least one attribute
+
+			if (!(syntaxNode is FieldDeclarationSyntax fieldDeclaration))
+				return;
+
+			var isPublic = fieldDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.PublicKeyword));
+
+			if (!isPublic && fieldDeclaration.AttributeLists.Count == 0)
 				return;
 
 			Variables.AddRange(fieldDeclaration.Declaration.Variables);
